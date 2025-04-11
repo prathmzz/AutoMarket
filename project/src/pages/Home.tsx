@@ -1,45 +1,49 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { TopNavigation } from '../components/TopNavigation';
-import { BottomNavigation } from '../components/BottomNavigation';
-import { CarCard } from '../components/CarCard';
-import { ExpandedCarCard } from '../components/ExpandedCarCard';
-import { CompareButton } from '../components/CompareButton';
-import { Car } from '../types/car';
-import { Search, SlidersHorizontal } from 'lucide-react';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { TopNavigation } from "../components/TopNavigation";
+import { BottomNavigation } from "../components/BottomNavigation";
+import { CarCard } from "../components/CarCard";
+import { ExpandedCarCard } from "../components/ExpandedCarCard";
+import { CompareButton } from "../components/CompareButton";
+import { Car } from "../types/car";
+import { Search, SlidersHorizontal } from "lucide-react";
+import { CompareView } from "../components/CompareView";
+
 
 const sampleCars: Car[] = [
   {
     id: 1,
-    title: 'BMW M3',
+    title: "BMW M3",
     price: 75000,
-    location: 'New York, NY',
+    location: "New York, NY",
     year: 2023,
-    postedAt: '2 days ago',
+    postedAt: "2 days ago",
     images: [
-      'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800&q=80',
-      'https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=800&q=80',
-      'https://images.unsplash.com/photo-1617654112368-307921291f42?w=800&q=80',
+      "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800&q=80",
+      "https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=800&q=80",
+      "https://images.unsplash.com/photo-1617654112368-307921291f42?w=800&q=80",
     ],
-    description: 'Excellent condition BMW M3 with all premium features. Regular maintenance and service history available.',
+    description:
+      "Excellent condition BMW M3 with all premium features. Regular maintenance and service history available.",
     kmsDriven: 15000,
-    postedBy: 'John Doe'
+    postedBy: "John Doe",
   },
   {
     id: 2,
-    title: 'BMW w3',
+    title: "BMW w3",
     price: 78000,
-    location: 'New York, NY',
+    location: "New York, NY",
     year: 2023,
-    postedAt: '25 days ago',
+    postedAt: "25 days ago",
     images: [
-      'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800&q=80',
-      'https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=800&q=80',
-      'https://images.unsplash.com/photo-1617654112368-307921291f42?w=800&q=80',
+      "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800&q=80",
+      "https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=800&q=80",
+      "https://images.unsplash.com/photo-1617654112368-307921291f42?w=800&q=80",
     ],
-    description: 'Excellent condition BMW M3 with all premium features. Regular maintenance and service history available.',
+    description:
+      "Excellent condition BMW M3 with all premium features. Regular maintenance and service history available.",
     kmsDriven: 15000,
-    postedBy: 'John Doe'
+    postedBy: "John Doe",
   },
   // Add more sample cars here
 ];
@@ -48,24 +52,29 @@ export const Home: React.FC = () => {
   const navigate = useNavigate();
   const [selectedCar, setSelectedCar] = useState<Car | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [carsToCompare, setCarsToCompare] = useState<Car[]>([]);
+  const [showCompareView, setShowCompareView] = useState(false);
   const [filters, setFilters] = useState({
-    minPrice: '',
-    maxPrice: '',
-    minYear: '',
-    maxYear: '',
-    location: ''
+    minPrice: "",
+    maxPrice: "",
+    minYear: "",
+    maxYear: "",
+    location: "",
   });
 
   const handleChatClick = (carId: number) => {
     navigate(`/chat-seller/${carId}`);
   };
 
+  const handleRemoveFromCompare = (carId: number) => {
+    setCarsToCompare((prevCars) => prevCars.filter((car) => car.id !== carId));
+  };
+
   const handlePrevImage = () => {
     if (selectedCar) {
-      setCurrentImageIndex((prev) => 
+      setCurrentImageIndex((prev) =>
         prev === 0 ? selectedCar.images.length - 1 : prev - 1
       );
     }
@@ -73,7 +82,7 @@ export const Home: React.FC = () => {
 
   const handleNextImage = () => {
     if (selectedCar) {
-      setCurrentImageIndex((prev) => 
+      setCurrentImageIndex((prev) =>
         prev === selectedCar.images.length - 1 ? 0 : prev + 1
       );
     }
@@ -91,22 +100,26 @@ export const Home: React.FC = () => {
 
   const handleCompareClick = () => {
     if (carsToCompare.length >= 2) {
-      navigate('/compare', { state: { cars: carsToCompare } });
+      setShowCompareView(true);
     }
   };
 
-  const filteredCars = sampleCars.filter(car => {
-    const matchesSearch = car.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         car.location.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesPrice = (!filters.minPrice || car.price >= Number(filters.minPrice)) &&
-                        (!filters.maxPrice || car.price <= Number(filters.maxPrice));
-    
-    const matchesYear = (!filters.minYear || car.year >= Number(filters.minYear)) &&
-                       (!filters.maxYear || car.year <= Number(filters.maxYear));
-    
-    const matchesLocation = !filters.location || 
-                           car.location.toLowerCase().includes(filters.location.toLowerCase());
+  const filteredCars = sampleCars.filter((car) => {
+    const matchesSearch =
+      car.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      car.location.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesPrice =
+      (!filters.minPrice || car.price >= Number(filters.minPrice)) &&
+      (!filters.maxPrice || car.price <= Number(filters.maxPrice));
+
+    const matchesYear =
+      (!filters.minYear || car.year >= Number(filters.minYear)) &&
+      (!filters.maxYear || car.year <= Number(filters.maxYear));
+
+    const matchesLocation =
+      !filters.location ||
+      car.location.toLowerCase().includes(filters.location.toLowerCase());
 
     return matchesSearch && matchesPrice && matchesYear && matchesLocation;
   });
@@ -116,11 +129,17 @@ export const Home: React.FC = () => {
       <TopNavigation />
 
       {/* Main Content */}
-      <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24 ${selectedCar ? 'blur-sm' : ''}`}>
+      <div
+        className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24 ${
+          selectedCar ? "blur-sm" : ""
+        }`}
+      >
         {/* Header with Search and Filters */}
         <div className="mb-8">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">Featured Vehicles</h2>
+            <h2 className="text-2xl font-bold text-gray-900">
+              Featured Vehicles
+            </h2>
             <div className="flex items-center gap-4">
               <div className="relative">
                 <input
@@ -147,62 +166,80 @@ export const Home: React.FC = () => {
             <div className="bg-white p-4 rounded-lg shadow-md mb-6">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Price Range</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Price Range
+                  </label>
                   <div className="flex gap-2">
                     <input
                       type="number"
                       placeholder="Min"
                       value={filters.minPrice}
-                      onChange={(e) => setFilters({...filters, minPrice: e.target.value})}
+                      onChange={(e) =>
+                        setFilters({ ...filters, minPrice: e.target.value })
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-md"
                     />
                     <input
                       type="number"
                       placeholder="Max"
                       value={filters.maxPrice}
-                      onChange={(e) => setFilters({...filters, maxPrice: e.target.value})}
+                      onChange={(e) =>
+                        setFilters({ ...filters, maxPrice: e.target.value })
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-md"
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Year Range</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Year Range
+                  </label>
                   <div className="flex gap-2">
                     <input
                       type="number"
                       placeholder="Min"
                       value={filters.minYear}
-                      onChange={(e) => setFilters({...filters, minYear: e.target.value})}
+                      onChange={(e) =>
+                        setFilters({ ...filters, minYear: e.target.value })
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-md"
                     />
                     <input
                       type="number"
                       placeholder="Max"
                       value={filters.maxYear}
-                      onChange={(e) => setFilters({...filters, maxYear: e.target.value})}
+                      onChange={(e) =>
+                        setFilters({ ...filters, maxYear: e.target.value })
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-md"
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Location
+                  </label>
                   <input
                     type="text"
                     placeholder="Enter location"
                     value={filters.location}
-                    onChange={(e) => setFilters({...filters, location: e.target.value})}
+                    onChange={(e) =>
+                      setFilters({ ...filters, location: e.target.value })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
                   />
                 </div>
                 <div className="flex items-end">
                   <button
-                    onClick={() => setFilters({
-                      minPrice: '',
-                      maxPrice: '',
-                      minYear: '',
-                      maxYear: '',
-                      location: ''
-                    })}
+                    onClick={() =>
+                      setFilters({
+                        minPrice: "",
+                        maxPrice: "",
+                        minYear: "",
+                        maxYear: "",
+                        location: "",
+                      })
+                    }
                     className="w-full px-4 py-2 text-indigo-600 border border-indigo-600 rounded-md hover:bg-indigo-50"
                   >
                     Clear Filters
@@ -226,7 +263,10 @@ export const Home: React.FC = () => {
               onChatClick={handleChatClick}
               onToggleCompare={() => handleToggleCompare(car)}
               isInCompare={carsToCompare.some((c) => c.id === car.id)}
-              compareDisabled={carsToCompare.length >= 4 && !carsToCompare.some((c) => c.id === car.id)}
+              compareDisabled={
+                carsToCompare.length >= 4 &&
+                !carsToCompare.some((c) => c.id === car.id)
+              }
             />
           ))}
         </div>
@@ -242,9 +282,21 @@ export const Home: React.FC = () => {
           onNextImage={handleNextImage}
           onToggleCompare={() => handleToggleCompare(selectedCar)}
           isInCompare={carsToCompare.some((c) => c.id === selectedCar.id)}
-          compareDisabled={carsToCompare.length >= 4 && !carsToCompare.some((c) => c.id === selectedCar.id)}
+          compareDisabled={
+            carsToCompare.length >= 4 &&
+            !carsToCompare.some((c) => c.id === selectedCar.id)
+          }
         />
       )}
+
+{showCompareView && (
+  <CompareView
+    cars={carsToCompare}
+    onRemoveCar={handleRemoveFromCompare}
+    onClose={() => setShowCompareView(false)}
+  />
+)}
+
 
       <CompareButton
         carsToCompare={carsToCompare}
