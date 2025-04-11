@@ -8,45 +8,10 @@ import { CompareButton } from "../components/CompareButton";
 import { Car } from "../types/car";
 import { Search, SlidersHorizontal } from "lucide-react";
 import { CompareView } from "../components/CompareView";
+import adds from "../static/adds";
 
 
-const sampleCars: Car[] = [
-  {
-    id: 1,
-    title: "BMW M3",
-    price: 75000,
-    location: "New York, NY",
-    year: 2023,
-    postedAt: "2 days ago",
-    images: [
-      "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800&q=80",
-      "https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=800&q=80",
-      "https://images.unsplash.com/photo-1617654112368-307921291f42?w=800&q=80",
-    ],
-    description:
-      "Excellent condition BMW M3 with all premium features. Regular maintenance and service history available.",
-    kmsDriven: 15000,
-    postedBy: "John Doe",
-  },
-  {
-    id: 2,
-    title: "BMW w3",
-    price: 78000,
-    location: "New York, NY",
-    year: 2023,
-    postedAt: "25 days ago",
-    images: [
-      "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800&q=80",
-      "https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=800&q=80",
-      "https://images.unsplash.com/photo-1617654112368-307921291f42?w=800&q=80",
-    ],
-    description:
-      "Excellent condition BMW M3 with all premium features. Regular maintenance and service history available.",
-    kmsDriven: 15000,
-    postedBy: "John Doe",
-  },
-  // Add more sample cars here
-];
+
 
 export const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -104,7 +69,7 @@ export const Home: React.FC = () => {
     }
   };
 
-  const filteredCars = sampleCars.filter((car) => {
+  const filteredCars = adds.filter((car) => {
     const matchesSearch =
       car.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       car.location.toLowerCase().includes(searchTerm.toLowerCase());
