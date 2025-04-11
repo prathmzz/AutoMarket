@@ -1,9 +1,11 @@
 import React from 'react';
-import { Edit2, Trash2, Check } from 'lucide-react';
+import { Edit2, Trash2, Check, Plus } from 'lucide-react';
 import { TopNavigation } from '../components/TopNavigation';
 import { BottomNavigation } from '../components/BottomNavigation';
+import { useNavigate } from 'react-router-dom';
 
 export const MyAds: React.FC = () => {
+  const navigate = useNavigate();
   // Dummy ads data
   const myAds = [
     {
@@ -41,7 +43,17 @@ export const MyAds: React.FC = () => {
       <TopNavigation />
 
       <div className="max-w-7xl mx-auto px-4 py-6 pb-24">
-        <h1 className="text-xl font-bold text-gray-900 mb-6">My Ads</h1>
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-xl font-bold text-gray-900">My Ads</h1>
+          <button
+            onClick={() => navigate('/new-ad')}
+            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+          >
+            <Plus className="h-5 w-5" />
+            Post New Ad
+          </button>
+        </div>
+
         <div className="space-y-4">
           {myAds.map((ad) => (
             <div key={ad.id} className="bg-white rounded-lg shadow-sm p-4">
