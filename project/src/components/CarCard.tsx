@@ -35,7 +35,7 @@ export const CarCard: React.FC<CarCardProps> = ({
           <div>
             <h3 className="text-lg font-semibold text-gray-900">{car.title}</h3>
             <p className="text-xl font-semibold text-indigo-600">
-              ${car.price.toLocaleString()}
+            ₹ {car.price.toLocaleString()}
             </p>
           </div>
           <div>
