@@ -1,10 +1,9 @@
 import React from 'react';
-import { Heart } from 'lucide-react';
 import { TopNavigation } from '../components/TopNavigation';
 import { BottomNavigation } from '../components/BottomNavigation';
+import { HeartButton } from '../components/buttons/HeartButton';
 
 export const Favorites: React.FC = () => {
-  // Dummy favorite ads data
   const favoriteAds = [
     {
       id: 1,
@@ -66,12 +65,7 @@ export const Favorites: React.FC = () => {
                     <p className="text-sm text-gray-500 mt-1">{ad.location}</p>
                     <p className="text-sm text-gray-500">Posted {ad.postedDate}</p>
                   </div>
-                  <button
-                    onClick={() => handleRemoveFromFavorites(ad.id)}
-                    className="p-2 text-red-600 hover:bg-red-50 rounded-full"
-                  >
-                    <Heart className="h-5 w-5 fill-current" />
-                  </button>
+                  <HeartButton />
                 </div>
               </div>
             </div>

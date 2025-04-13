@@ -1,7 +1,8 @@
 import React from 'react';
-import { Heart, MapPin, MessageCircle } from 'lucide-react';
+import { MapPin, MessageCircle } from 'lucide-react';
 import { Car } from '../types/car';
 import { AddToCompareButton } from './AddToCompareButton';
+import { HeartButton } from './buttons/HeartButton';
 
 interface CarCardProps {
   car: Car;
@@ -27,7 +28,6 @@ export const CarCard: React.FC<CarCardProps> = ({
     >
       <img
         src={"https://th.bing.com/th/id/OIP.OMoibkkHvfepe8t_7ZBzhwHaHa?w=2160&h=2160&rs=1&pid=ImgDetMain"}
-        // src={car.images[0]}
         alt={car.name}
         className="w-full h-48 object-cover"
       />
@@ -36,7 +36,6 @@ export const CarCard: React.FC<CarCardProps> = ({
           <div>
             <h3 className="text-lg font-semibold text-gray-900">
               {car.name} | {car.make} {car.model}
-              {/* {car.name} | "model temp makee" */}
             </h3>
             <p className="text-xl font-semibold text-indigo-600">
               ₹ {car.price.toLocaleString()}
@@ -76,14 +75,7 @@ export const CarCard: React.FC<CarCardProps> = ({
               onToggleCompare={onToggleCompare}
               disabled={compareDisabled}
             />
-            <button 
-              onClick={(e) => {
-                e.stopPropagation();
-              }} 
-              className="text-indigo-600 hover:text-indigo-800"
-            >
-              <Heart className="h-5 w-5" />
-            </button>
+            <HeartButton />
           </div>
         </div>
       </div>

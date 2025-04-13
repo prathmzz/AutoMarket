@@ -2,6 +2,7 @@ import React from 'react';
 import { MapPin, MessageCircle, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { Car } from '../types/car';
 import { AddToCompareButton } from './AddToCompareButton';
+import { HeartButton } from './buttons/HeartButton';
 
 interface ExpandedCarCardProps {
   car: Car;
@@ -69,7 +70,7 @@ export const ExpandedCarCard: React.FC<ExpandedCarCardProps> = ({
             <div>
               <h2 className="text-2xl font-bold text-gray-900">{car.name}</h2>
               <p className="text-xl text-indigo-600 font-semibold">
-                ${car.price.toLocaleString()}
+                ₹ {car.price.toLocaleString()}
               </p>
             </div>
             <div className="flex gap-2">
@@ -78,6 +79,7 @@ export const ExpandedCarCard: React.FC<ExpandedCarCardProps> = ({
                 onToggleCompare={onToggleCompare}
                 disabled={compareDisabled}
               />
+              <HeartButton />
               <button
                 onClick={() => onChatClick(car.id)}
                 className="bg-indigo-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-indigo-700"
