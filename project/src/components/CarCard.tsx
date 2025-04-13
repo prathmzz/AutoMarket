@@ -26,7 +26,8 @@ export const CarCard: React.FC<CarCardProps> = ({
       onClick={() => onCardClick(car)}
     >
       <img
-        src={car.images[0]}
+        src={"https://th.bing.com/th/id/OIP.OMoibkkHvfepe8t_7ZBzhwHaHa?w=2160&h=2160&rs=1&pid=ImgDetMain"}
+        // src={car.images[0]}
         alt={car.name}
         className="w-full h-48 object-cover"
       />
@@ -34,8 +35,8 @@ export const CarCard: React.FC<CarCardProps> = ({
         <div className="grid grid-cols-2 gap-4">
           <div>
             <h3 className="text-lg font-semibold text-gray-900">
-              {/* {car.name} | {car.make} {car.model} */}
-              {car.name} | "model temp makee"
+              {car.name} | {car.make} {car.model}
+              {/* {car.name} | "model temp makee" */}
             </h3>
             <p className="text-xl font-semibold text-indigo-600">
               ₹ {car.price.toLocaleString()}

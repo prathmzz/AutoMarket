@@ -9,4 +9,8 @@ export interface Car {
     description: string;
     mileage: number;
     postedBy: string;
+    make?: string; // Optional property
+    model?: string; // Optional property
+    transmission?: string; // Optional property
+      
   }

@@ -1,5 +1,5 @@
 // File: pages/Home.tsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { TopNavigation } from "../components/TopNavigation";
 import { BottomNavigation } from "../components/BottomNavigation";
@@ -9,9 +9,9 @@ import { CompareButton } from "../components/CompareButton";
 import { CompareView } from "../components/CompareView";
 import { Car } from "../types/car";
 import { Search, SlidersHorizontal } from "lucide-react";
-import adds from "../static/adds";
 import { FilterPanel } from "../components/FilterPanel";
 import { useCarFilter } from "../hooks/useCarFilter";
+import defaultAdds from "../static/adds";
 
 export const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -21,7 +21,70 @@ export const Home: React.FC = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [carsToCompare, setCarsToCompare] = useState<Car[]>([]);
   const [showCompareView, setShowCompareView] = useState(false);
-  const { filters, updateFilters, clearFilters, filteredCars } = useCarFilter(adds, searchTerm);
+  const [carData, setCarData] = useState<Car[]>([]);
+
+  const [skip, setSkip] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+
+  const { filters, updateFilters, clearFilters, filteredCars } = useCarFilter(carData, searchTerm);
+
+  const fetchCars = async () => {
+    if (isLoading || !hasMore) return;
+
+    setIsLoading(true);
+    try {
+      const token =
+        localStorage.getItem("token") ||
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...";
+
+      const response = await fetch(`http://localhost:5000/home/home-listings?skip=${skip}&limit=30`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) throw new Error("Failed to fetch car listings");
+
+      const data = await response.json();
+
+      if (data.length === 0) {
+        setHasMore(false);
+      } else {
+        const normalizedCars: Car[] = data.map((car: any) => ({
+          ...car,
+          id: car._id,
+        }));
+        setCarData(prev => [...prev, ...normalizedCars]);
+        setSkip(prev => prev + 10);
+      }
+    } catch (error) {
+      console.error("Error fetching cars:", error);
+      setCarData(defaultAdds); // fallback
+      setHasMore(false);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCars();
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const nearBottom =
+        window.innerHeight + window.scrollY >= document.body.offsetHeight - 300;
+
+      if (nearBottom) {
+        fetchCars();
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [skip, isLoading, hasMore]);
 
   const handleChatClick = (carId: number) => navigate(`/chat-seller/${carId}`);
 
@@ -82,7 +145,11 @@ export const Home: React.FC = () => {
           </div>
 
           {showFilters && (
-            <FilterPanel filters={filters} updateFilters={updateFilters} clearFilters={clearFilters} />
+            <FilterPanel
+              filters={filters}
+              updateFilters={updateFilters}
+              clearFilters={clearFilters}
+            />
           )}
         </div>
 
@@ -102,6 +169,12 @@ export const Home: React.FC = () => {
               compareDisabled={carsToCompare.length >= 4 && !carsToCompare.some((c) => c.id === car.id)}
             />
           ))}
+        </div>
+
+        {/* Loading / No more data */}
+        <div className="text-center py-4">
+          {isLoading && <span className="text-gray-500">Loading more cars...</span>}
+          {!hasMore && <span className="text-gray-400">No more cars to load.</span>}
         </div>
       </div>
 
@@ -127,10 +200,7 @@ export const Home: React.FC = () => {
         />
       )}
 
-      <CompareButton
-        carsToCompare={carsToCompare}
-        onCompareClick={handleCompareClick}
-      />
+      <CompareButton carsToCompare={carsToCompare} onCompareClick={handleCompareClick} />
 
       <BottomNavigation />
     </div>
