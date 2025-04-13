@@ -38,7 +38,7 @@ export const ExpandedCarCard: React.FC<ExpandedCarCardProps> = ({
         <div className="relative">
           <img
             src={car.images[currentImageIndex]}
-            alt={car.title}
+            alt={car.name}
             className="w-full h-[400px] object-cover"
           />
           <button
@@ -67,7 +67,7 @@ export const ExpandedCarCard: React.FC<ExpandedCarCardProps> = ({
         <div className="p-6">
           <div className="flex justify-between items-start mb-4">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">{car.title}</h2>
+              <h2 className="text-2xl font-bold text-gray-900">{car.name}</h2>
               <p className="text-xl text-indigo-600 font-semibold">
                 ${car.price.toLocaleString()}
               </p>
@@ -93,10 +93,10 @@ export const ExpandedCarCard: React.FC<ExpandedCarCardProps> = ({
               {car.location}
             </div>
             <div className="text-gray-600">
-              <span className="font-medium">Purchase Year:</span> {car.year}
+              <span className="font-medium">Purchase Year:</span> {car.year_of_purchase}
             </div>
             <div className="text-gray-600">
-              <span className="font-medium">Kms Driven:</span> {car.kmsDriven.toLocaleString()} km
+              <span className="font-medium">Kms Driven:</span> {car.mileage.toLocaleString()} km
             </div>
             <div className="text-gray-600">
               <span className="font-medium">Posted By:</span> {car.postedBy}

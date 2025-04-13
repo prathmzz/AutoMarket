@@ -1,12 +1,12 @@
 export interface Car {
     id: number;
-    title: string;
+    name: string;
     price: number;
     location: string;
-    year: number;
+    year_of_purchase: number;
     postedAt: string;
     images: string[];
     description: string;
-    kmsDriven: number;
+    mileage: number;
     postedBy: string;
   }

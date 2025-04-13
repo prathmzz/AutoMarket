@@ -27,15 +27,18 @@ export const CarCard: React.FC<CarCardProps> = ({
     >
       <img
         src={car.images[0]}
-        alt={car.title}
+        alt={car.name}
         className="w-full h-48 object-cover"
       />
       <div className="p-4">
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">{car.title}</h3>
+            <h3 className="text-lg font-semibold text-gray-900">
+              {/* {car.name} | {car.make} {car.model} */}
+              {car.name} | "model temp makee"
+            </h3>
             <p className="text-xl font-semibold text-indigo-600">
-            ₹ {car.price.toLocaleString()}
+              ₹ {car.price.toLocaleString()}
             </p>
           </div>
           <div>
@@ -45,17 +48,17 @@ export const CarCard: React.FC<CarCardProps> = ({
             </div>
             <div className="mt-1">
               <span className="text-sm text-gray-500 block">
-                <span className="font-medium">Purchase Year:</span> {car.year}
+                <span className="font-medium">Purchase Year:</span> {car.year_of_purchase}
               </span>
               <span className="text-sm text-gray-500 block">
-                <span className="font-medium">Posted On:</span> {car.postedAt}
+                <span className="font-medium">Driven:</span> {car.mileage.toLocaleString()} km
               </span>
             </div>
           </div>
         </div>
         <div className="mt-4 flex justify-between items-center">
           <div className="text-sm text-gray-500">
-            {car.kmsDriven.toLocaleString()} km driven
+            {car.mileage.toLocaleString()} km driven
           </div>
           <div className="flex gap-2">
             <button 

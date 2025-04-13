@@ -26,21 +26,24 @@ export const useCarFilter = (cars: Car[], searchTerm: string) => {
 
   const filteredCars = useMemo(() => {
     return cars.filter((car) => {
+      const carName = car.name?.toLowerCase() ?? "";
+      const carLocation = car.location?.toLowerCase() ?? "";
+      const search = searchTerm.toLowerCase();
+
       const matchesSearch =
-        car.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        car.location.toLowerCase().includes(searchTerm.toLowerCase());
+        carName.includes(search) || carLocation.includes(search);
 
       const matchesPrice =
         (!filters.minPrice || car.price >= Number(filters.minPrice)) &&
         (!filters.maxPrice || car.price <= Number(filters.maxPrice));
 
       const matchesYear =
-        (!filters.minYear || car.year >= Number(filters.minYear)) &&
-        (!filters.maxYear || car.year <= Number(filters.maxYear));
+        (!filters.minYear || car.year_of_purchase >= Number(filters.minYear)) &&
+        (!filters.maxYear || car.year_of_purchase <= Number(filters.maxYear));
 
       const matchesLocation =
         !filters.location ||
-        car.location.toLowerCase().includes(filters.location.toLowerCase());
+        carLocation.includes(filters.location.toLowerCase());
 
       return matchesSearch && matchesPrice && matchesYear && matchesLocation;
     });
