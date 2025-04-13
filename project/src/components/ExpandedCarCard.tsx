@@ -1,116 +1,138 @@
-import React from 'react';
-import { MapPin, MessageCircle, ChevronLeft, ChevronRight, X } from 'lucide-react';
-import { Car } from '../types/car';
-import { AddToCompareButton } from './AddToCompareButton';
+// File: pages/Home.tsx
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { TopNavigation } from "../components/TopNavigation";
+import { BottomNavigation } from "../components/BottomNavigation";
+import { CarCard } from "../components/CarCard";
+import { ExpandedCarCard } from "../components/ExpandedCarCard";
+import { CompareButton } from "../components/CompareButton";
+import { CompareView } from "../components/CompareView";
+import { Car } from "../types/car";
+import { Search, SlidersHorizontal } from "lucide-react";
+import adds from "../static/adds";
+import { FilterPanel } from "../components/FilterPanel";
+import { useCarFilter } from "../hooks/useCarFilter";
 
-interface ExpandedCarCardProps {
-  car: Car;
-  onClose: () => void;
-  onChatClick: (carId: number) => void;
-  currentImageIndex: number;
-  onPrevImage: () => void;
-  onNextImage: () => void;
-  onToggleCompare: () => void;
-  isInCompare: boolean;
-  compareDisabled: boolean;
-}
+export const Home: React.FC = () => {
+  const navigate = useNavigate();
+  const [selectedCar, setSelectedCar] = useState<Car | null>(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
+  const [carsToCompare, setCarsToCompare] = useState<Car[]>([]);
+  const [showCompareView, setShowCompareView] = useState(false);
+  const { filters, updateFilters, clearFilters, filteredCars } = useCarFilter(adds, searchTerm);
 
-export const ExpandedCarCard: React.FC<ExpandedCarCardProps> = ({
-  car,
-  onClose,
-  onChatClick,
-  currentImageIndex,
-  onPrevImage,
-  onNextImage,
-  onToggleCompare,
-  isInCompare,
-  compareDisabled,
-}) => {
+  const handleChatClick = (carId: number) => navigate(`/chat-seller/${carId}`);
+
+  const handleRemoveFromCompare = (carId: number) => {
+    setCarsToCompare(prev => prev.filter(car => car.id !== carId));
+  };
+
+  const handlePrevImage = () => {
+    if (selectedCar) {
+      setCurrentImageIndex(prev => (prev === 0 ? selectedCar.images.length - 1 : prev - 1));
+    }
+  };
+
+  const handleNextImage = () => {
+    if (selectedCar) {
+      setCurrentImageIndex(prev => (prev === selectedCar.images.length - 1 ? 0 : prev + 1));
+    }
+  };
+
+  const handleToggleCompare = (car: Car) => {
+    setCarsToCompare(prev => {
+      const exists = prev.some(c => c.id === car.id);
+      return exists ? prev.filter(c => c.id !== car.id) : [...prev, car];
+    });
+  };
+
+  const handleCompareClick = () => {
+    if (carsToCompare.length >= 2) setShowCompareView(true);
+  };
+
   return (
-    <div 
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-      onClick={onClose}
-    >
-      <div 
-        className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="relative">
-          <img
-            src={car.images[currentImageIndex]}
-            alt={car.title}
-            className="w-full h-[400px] object-cover"
-          />
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 bg-white rounded-full p-1 shadow-lg hover:bg-gray-100"
-          >
-            <X className="h-6 w-6" />
-          </button>
-          {car.images.length > 1 && (
-            <>
+    <div className="min-h-screen bg-gray-50 relative">
+      <TopNavigation />
+
+      <div className={`max-w-7xl mx-auto px-4 py-8 pb-24 ${selectedCar ? "blur-sm" : ""}`}>
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold">Featured Vehicles</h2>
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search cars..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 pr-4 py-2 border rounded-lg"
+                />
+                <Search className="h-5 w-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              </div>
               <button
-                onClick={onPrevImage}
-                className="absolute left-4 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100"
+                onClick={() => setShowFilters(!showFilters)}
+                className="flex items-center gap-2 px-4 py-2 border rounded-lg"
               >
-                <ChevronLeft className="h-6 w-6" />
+                <SlidersHorizontal className="h-5 w-5" /> Filters
               </button>
-              <button
-                onClick={onNextImage}
-                className="absolute right-4 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100"
-              >
-                <ChevronRight className="h-6 w-6" />
-              </button>
-            </>
+            </div>
+          </div>
+
+          {showFilters && (
+            <FilterPanel filters={filters} updateFilters={updateFilters} clearFilters={clearFilters} />
           )}
         </div>
-        <div className="p-6">
-          <div className="flex justify-between items-start mb-4">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900">{car.title}</h2>
-              <p className="text-xl text-indigo-600 font-semibold">
-                ${car.price.toLocaleString()}
-              </p>
-            </div>
-            <div className="flex gap-2">
-              <AddToCompareButton
-                isInCompare={isInCompare}
-                onToggleCompare={onToggleCompare}
-                disabled={compareDisabled}
-              />
-              <button
-                onClick={() => onChatClick(car.id)}
-                className="bg-indigo-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-indigo-700"
-              >
-                <MessageCircle className="h-5 w-5" />
-                Chat with Seller
-              </button>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4 mb-6">
-            <div className="flex items-center gap-2 text-gray-600">
-              <MapPin className="h-5 w-5" />
-              {car.location}
-            </div>
-            <div className="text-gray-600">
-              <span className="font-medium">Purchase Year:</span> {car.year}
-            </div>
-            <div className="text-gray-600">
-              <span className="font-medium">Kms Driven:</span> {car.kmsDriven.toLocaleString()} km
-            </div>
-            <div className="text-gray-600">
-              <span className="font-medium">Posted By:</span> {car.postedBy}
-            </div>
-            <div className="text-gray-600">
-              <span className="font-medium">Posted On:</span> {car.postedAt}
-            </div>
-          </div>
-          <div className="border-t pt-4">
-            <h3 className="text-lg font-semibold mb-2">Description</h3>
-            <p className="text-gray-600">{car.description}</p>
-          </div>
+
+        {/* Cars Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredCars.map((car) => (
+            <CarCard
+              key={car.id}
+              car={car}
+              onCardClick={() => {
+                setSelectedCar(car);
+                setCurrentImageIndex(0);
+              }}
+              onChatClick={handleChatClick}
+              onToggleCompare={() => handleToggleCompare(car)}
+              isInCompare={carsToCompare.some((c) => c.id === car.id)}
+              compareDisabled={carsToCompare.length >= 4 && !carsToCompare.some((c) => c.id === car.id)}
+            />
+          ))}
         </div>
       </div>
+
+      {selectedCar && (
+        <ExpandedCarCard
+          car={selectedCar}
+          onClose={() => setSelectedCar(null)}
+          onChatClick={handleChatClick}
+          currentImageIndex={currentImageIndex}
+          onPrevImage={handlePrevImage}
+          onNextImage={handleNextImage}
+          onToggleCompare={() => handleToggleCompare(selectedCar)}
+          isInCompare={carsToCompare.some((c) => c.id === selectedCar.id)}
+          compareDisabled={carsToCompare.length >= 4 && !carsToCompare.some((c) => c.id === selectedCar.id)}
+        />
+      )}
+
+      {showCompareView && (
+        <CompareView
+          cars={carsToCompare}
+          onRemoveCar={handleRemoveFromCompare}
+          onClose={() => setShowCompareView(false)}
+        />
+      )}
+
+      <CompareButton
+        carsToCompare={carsToCompare}
+        onCompareClick={handleCompareClick}
+      />
+
+      <BottomNavigation />
     </div>
   );
 };

@@ -31,16 +31,23 @@ export const Login: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
-      // Handle login logic here
       try {
-        const res = await API.post("/auth/login", formData);
-        setMessage(res.data.message || res.data.error);
+        const res = await API.post("/login", formData);
+        const { message, token, user } = res.data;
+
+        if (token) {
+          // Store token and user in localStorage
+          localStorage.setItem("token", token);
+          localStorage.setItem("user", JSON.stringify(user));
+          setMessage(message || "Login successful");
+          navigate("/home");
+        } else {
+          setMessage("Invalid response from server.");
+        }
       } catch (err) {
-        setMessage("Something went wrong");
+        setMessage("Login failed. Please try again.");
+        console.error("Login error:", err);
       }
-      navigate("/home");
-      console.log("Login form submitted:", formData);
-      console.log("Login form submitted:", formData);
     }
   };
 
@@ -111,6 +118,10 @@ export const Login: React.FC = () => {
             Sign in
           </button>
 
+          {message && (
+            <p className="text-center text-sm text-red-500 mt-2">{message}</p>
+          )}
+
           <p className="text-center text-sm text-gray-600">
             Don't have an account?{" "}
             <button
@@ -123,6 +134,7 @@ export const Login: React.FC = () => {
           </p>
         </form>
       </AuthLayout>
+
       <button
         onClick={() => navigate("/signup")}
         className="fixed bottom-4 right-4 bg-indigo-600 text-white px-4 py-2 rounded-md"
@@ -132,3 +144,4 @@ export const Login: React.FC = () => {
     </>
   );
 };
+//             

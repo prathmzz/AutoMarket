@@ -12,7 +12,9 @@ export const Signup: React.FC = () => {
     email: '',
     password: '',
     confirmPassword: '',
+    location: '', // ✅ added
   });
+
   const [message, setMessage] = useState("");
   const [errors, setErrors] = useState<Partial<SignupFormData>>({});
 
@@ -26,14 +28,18 @@ export const Signup: React.FC = () => {
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Email is invalid';
     }
+    if (!formData.location) {
+      newErrors.location = 'Location is required';
+    }
     if (!formData.password) {
       newErrors.password = 'Password is required';
-    } else if (formData.password.length < 8) {
+    } else if (formData.password.length < 4) {
       newErrors.password = 'Password must be at least 8 characters';
     }
     if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match';
     }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -41,14 +47,19 @@ export const Signup: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
-      // Handle signup logic here
       try {
-        const res = await API.post("/auth/register", formData);
+        const { name, email, password, location } = formData;
+        const res = await API.post("/register", {
+          name,
+          email,
+          password,
+          location,
+        });
         setMessage(res.data.message || res.data.error);
+        navigate('/login');
       } catch (err) {
         setMessage("Something went wrong");
       }
-      navigate('/login');
       console.log('Signup form submitted:', formData);
     }
   };
@@ -80,6 +91,16 @@ export const Signup: React.FC = () => {
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               error={errors.email}
+            />
+            <Input
+              label="Location"
+              id="location"
+              name="location"
+              type="text"
+              autoComplete="address-level1"
+              value={formData.location}
+              onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+              error={errors.location}
             />
             <Input
               label="Password"
@@ -130,4 +151,4 @@ export const Signup: React.FC = () => {
       </button>
     </>
   );
-}
+};
