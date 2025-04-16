@@ -29,7 +29,8 @@ export const CarCard: React.FC<CarCardProps> = ({
       onClick={() => onCardClick(car)}
     >
       <img
-        src={"https://th.bing.com/th/id/OIP.OMoibkkHvfepe8t_7ZBzhwHaHa?w=2160&h=2160&rs=1&pid=ImgDetMain"}
+        src={car.images[0]}
+        // src={"https://th.bing.com/th/id/OIP.OMoibkkHvfepe8t_7ZBzhwHaHa?w=2160&h=2160&rs=1&pid=ImgDetMain"}
         alt={car.name}
         className="w-full h-48 object-cover"
       />

@@ -56,7 +56,8 @@ export const Home: React.FC = () => {
           ...car,
           id: car._id,
         }));
-        setCarData(prev => [...prev, ...normalizedCars]);
+        // setCarData(prev => [...prev, ...normalizedCars]);
+        setCarData(defaultAdds)
         setSkip(prev => prev + 10);
       }
     } catch (error) {
