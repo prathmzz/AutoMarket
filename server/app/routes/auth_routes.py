@@ -22,17 +22,15 @@ def login():
     if "error" in auth_result:
         return jsonify(auth_result), 401
 
-    # Generate JWT Token
-    user = db["users"].find_one({"email": data["email"]})
+    # Fetch full user object (excluding password)
+    user = db["users"].find_one({"email": data["email"]}, {"password": 0})
     access_token = create_access_token(identity=str(user["_id"]))
+
+    # Convert ObjectId to string
+    user["_id"] = str(user["_id"])
 
     return jsonify({
         "message": "Login successful",
         "token": access_token,
-        "user": {
-            "name": user["name"],
-            "email": user["email"],
-            "user_id": str(user["_id"])
-        }
+        "user": user
     }), 200
-
